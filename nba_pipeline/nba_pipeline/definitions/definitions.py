@@ -1,5 +1,5 @@
 from dagster import Definitions, load_assets_from_modules
-from nba_pipeline.nba_pipeline.assets import assets
+from nba_pipeline.nba_pipeline import assets
 from nba_pipeline.nba_pipeline.jobs import jobs
 from nba_pipeline.nba_pipeline.schedules import schedule
 from nba_pipeline.nba_pipeline.sensors import sensors
