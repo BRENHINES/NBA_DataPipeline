@@ -26,6 +26,8 @@ def available_seasons(context) -> list:
             "INSERT INTO nba_seasons (season) VALUES (%s) ON CONFLICT DO NOTHING;",
             (season,)
         )
+        context.instance.add_dynamic_partitions("nba_seasons", [season])
+
 
     if not validate_seasons(seasons):
         raise ValueError("Validation des saisons échouée avec Great Expectations.")
