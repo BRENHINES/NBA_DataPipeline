@@ -17,3 +17,15 @@ class NBAClient:
         response = requests.get(url, headers=self.headers)
         response.raise_for_status()
         return response.json().get("response", [])
+
+    def get_teams(self):
+        url = f"{self.base_url}/teams"
+        response = requests.get(url, headers=self.headers)
+        response.raise_for_status()
+        return response.json().get("response", [])
+
+    def get_players(self, season: str):
+        url = f"{self.base_url}/players?season={season}"
+        response = requests.get(url, headers=self.headers)
+        response.raise_for_status()
+        return response.json().get("response", [])
