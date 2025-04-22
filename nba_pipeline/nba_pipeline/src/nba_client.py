@@ -1,5 +1,6 @@
 import requests
 import os
+import time
 
 class NBAClient:
     def __init__(self, api_key: str = None, host: str = None):
@@ -12,20 +13,33 @@ class NBAClient:
             "X-RapidAPI-Host": self.host
         }
 
+    def _make_request(self, endpoint, params=None):
+        url = f"{self.base_url}/{endpoint}"
+        for attempt in range(5):  # max 5 essais
+            response = requests.get(url, headers=self.headers, params=params)
+            if response.status_code == 429:
+                wait_time = (attempt + 1) * 5
+                print(f"🚦 Rate limit hit (attempt {attempt + 1}). Waiting {wait_time}s...")
+                time.sleep(wait_time)
+                continue
+            response.raise_for_status()
+            return response.json().get("response", [])
+        raise Exception("Too many requests - retry attempts failed.")
+
+    def get_games(self, season, game_type="Regular Season"):
+        return self._make_request("games", {
+            "season": season,
+            "type": game_type
+        })
+
+    def get_players(self, season):
+        return self._make_request("players", {"season": season})
+
     def get_seasons(self):
-        url = f"{self.base_url}/seasons"
-        response = requests.get(url, headers=self.headers)
-        response.raise_for_status()
-        return response.json().get("response", [])
+        return self._make_request("seasons")
 
     def get_teams(self):
-        url = f"{self.base_url}/teams"
-        response = requests.get(url, headers=self.headers)
-        response.raise_for_status()
-        return response.json().get("response", [])
+        return self._make_request("teams")
 
-    def get_players(self, season: str):
-        url = f"{self.base_url}/players?season={season}"
-        response = requests.get(url, headers=self.headers)
-        response.raise_for_status()
-        return response.json().get("response", [])
+    def get_draft(self, season):
+        return self._make_request("players", {"season": season})

@@ -1,11 +1,10 @@
 from dagster import asset
-from nba_pipeline.nba_pipeline.resources.api_ressources import NBAAPIResource
-from nba_pipeline.nba_pipeline.resources.db_ressources import PostgresResource
-from nba_pipeline.nba_pipeline.partitions.season_partitions import season_partitions_def
+from nba_pipeline.nba_pipeline.partitions.season_partitions import season_partition_def
 
 @asset(
-    partitions_def=season_partitions_def,
-    required_resource_keys={"nba_api", "db"}
+    partitions_def=season_partition_def,
+    required_resource_keys={"nba_api", "db"},
+    deps=["available_seasons"]
 )
 def players_by_season(context):
     season = context.partition_key

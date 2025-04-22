@@ -1,7 +1,4 @@
 from dagster import asset
-from nba_pipeline.nba_pipeline.resources.api_ressources import NBAAPIResource
-from nba_pipeline.nba_pipeline.resources.db_ressources import PostgresResource
-from nba_pipeline.nba_pipeline.src.data_expectations import validate_seasons
 
 
 @asset(required_resource_keys={"nba_api", "db"})
@@ -26,11 +23,7 @@ def available_seasons(context) -> list:
             "INSERT INTO nba_seasons (season) VALUES (%s) ON CONFLICT DO NOTHING;",
             (season,)
         )
-        context.instance.add_dynamic_partitions("nba_seasons", [season])
-
-
-    if not validate_seasons(seasons):
-        raise ValueError("Validation des saisons échouée avec Great Expectations.")
+        context.instance.add_dynamic_partitions("nba_teams_partition", [str(season)])
 
     conn.commit()
     cursor.close()

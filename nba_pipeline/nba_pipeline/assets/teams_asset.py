@@ -1,6 +1,5 @@
 from dagster import asset
-from nba_pipeline.nba_pipeline.resources.api_ressources import NBAAPIResource
-from nba_pipeline.nba_pipeline.resources.db_ressources import PostgresResource
+from nba_pipeline.nba_pipeline.partitions.season_partitions import season_partition_def
 
 @asset(required_resource_keys={"nba_api", "db"})
 def available_teams(context):
